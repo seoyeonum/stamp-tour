@@ -1,4 +1,27 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet'; // Marker 색상 변경을 위한 import 문
+
+// Marker Icon - Red
+const redIcon = new L.Icon({
+  iconUrl:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png', // 그림자도 필요!
+  shadowSize: [41, 41],
+});
+
+// Marker Icon - Blue
+const blueIcon = new L.Icon({
+  iconUrl:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png', // 그림자도 필요!
+  shadowSize: [41, 41],
+});
 
 export default function App() {
   const position = [37.574419, 126.982628]; // 우정총국 (지도 중앙)
@@ -107,7 +130,7 @@ export default function App() {
     <div style={{ height: '100vh' }}>
       <MapContainer
         center={position}
-        zoom={15}
+        zoom={16}
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer
@@ -115,8 +138,15 @@ export default function App() {
           attribution="&copy; OpenStreetMap contributors"
         />
         {spots.map((spot) => (
-          <Marker position={[spot.lat, spot.lng]} key={spot.id}>
+          <Marker
+            position={[spot.lat, spot.lng]}
+            icon={spot.hasStamp ? blueIcon : redIcon}
+            key={spot.id}
+          >
             <Popup>{spot.name}</Popup>
+            {/* <Tooltip permanent direction="top" offset={[0, -20]}>
+              {spot.name}
+            </Tooltip> */}
           </Marker>
         ))}
       </MapContainer>
