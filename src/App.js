@@ -140,7 +140,7 @@ export default function App() {
 // Header Area
 function Logo() {
   return (
-    <div>
+    <header>
       <h1>2025 궁중문화축전 스탬프 투어</h1>
       <p>
         해당 페이지는 2025 가을 궁중문화축전 스탬프 투어 스팟을 한눈에
@@ -150,43 +150,45 @@ function Logo() {
         <a href="https://www.kh.or.kr/fest">궁중문화축전 홈페이지</a>를
         참고하시기 바랍니다.
       </p>
-    </div>
+    </header>
   );
 }
 
 // StampMap Area
 function StampMap({ position, spots }) {
   return (
-    <MapContainer center={position} zoom={15} className="map">
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="&copy; OpenStreetMap contributors"
-      />
-      {spots.map((spot) => (
-        <Marker
-          position={[spot.lat, spot.lng]}
-          icon={spot.hasStamp ? blueIcon : redIcon}
-          key={spot.id}
-        >
-          {/* <Popup>{spot.name}</Popup> */}
-          <Tooltip direction="top" offset={[0, -20]}>
-            {spot.name}
-          </Tooltip>
-        </Marker>
-      ))}
-    </MapContainer>
+    <main>
+      <MapContainer center={position} zoom={15} className="map">
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
+        />
+        {spots.map((spot) => (
+          <Marker
+            position={[spot.lat, spot.lng]}
+            icon={spot.hasStamp ? blueIcon : redIcon}
+            key={spot.id}
+          >
+            {/* <Popup>{spot.name}</Popup> */}
+            <Tooltip direction="top" offset={[0, -20]}>
+              {spot.name}
+            </Tooltip>
+          </Marker>
+        ))}
+      </MapContainer>
+    </main>
   );
 }
 
 // Side Bar Area
 function SideBar({ spots }) {
   return (
-    <div className="side-bar">
+    <aside className="side-bar">
       <h2>
         도장 찍기 순서표<button className="help">?</button>
       </h2>
       <SpotList spots={spots} />
-    </div>
+    </aside>
   );
 }
 
