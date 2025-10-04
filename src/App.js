@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
 import L from 'leaflet'; // Marker 색상 변경을 위한 import 문
 
 // Marker Icon - Red
@@ -128,47 +128,96 @@ export default function App() {
 
   return (
     <div className="stamp-tour">
-      {/* Map Area*/}
-      <MapContainer center={position} zoom={16} className="map">
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; OpenStreetMap contributors"
-        />
-        {spots.map((spot) => (
-          <Marker
-            position={[spot.lat, spot.lng]}
-            icon={spot.hasStamp ? blueIcon : redIcon}
-            key={spot.id}
-          >
-            <Popup>{spot.name}</Popup>
-            {/* <Tooltip permanent direction="top" offset={[0, -20]}>
-              {spot.name}
-            </Tooltip> */}
-          </Marker>
-        ))}
-      </MapContainer>
+      <Logo />
+      <StampMap position={position} spots={spots} />
 
       {/* List Area */}
-      <div className="side-bar">
-        <h1>
-          도장 찍기 순서표<button className="help">?</button>
-        </h1>
-        <ul className="spot-list">
-          {spots
-            .filter((spot) => spot.hasStamp)
-            .map((spot) => (
-              <li className="spot-box" key={spot.id}>
-                <h2>
-                  <span className="number">1</span>
-                  {spot.name}
-                </h2>
-              </li>
-            ))}
-          <li className="spot-box final-spot" key="final">
-            <h2 className="final-spot">경복궁 종합안내소</h2>
-          </li>
-        </ul>
-      </div>
+      <SideBar spots={spots} />
     </div>
+  );
+}
+
+// Header Area
+function Logo() {
+  return (
+    <div>
+      <h1>2025 궁중문화축전 스탬프 투어</h1>
+      <p>
+        해당 페이지는 2025 가을 궁중문화축전 스탬프 투어 스팟을 한눈에
+        파악하는데 도움이 되고자 만들어졌습니다.
+        <br />
+        공식 운영 홈페이지가 아니며, 정확한 정보는{' '}
+        <a href="https://www.kh.or.kr/fest">궁중문화축전 홈페이지</a>를
+        참고하시기 바랍니다.
+      </p>
+    </div>
+  );
+}
+
+// StampMap Area
+function StampMap({ position, spots }) {
+  return (
+    <MapContainer center={position} zoom={15} className="map">
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; OpenStreetMap contributors"
+      />
+      {spots.map((spot) => (
+        <Marker
+          position={[spot.lat, spot.lng]}
+          icon={spot.hasStamp ? blueIcon : redIcon}
+          key={spot.id}
+        >
+          {/* <Popup>{spot.name}</Popup> */}
+          <Tooltip direction="top" offset={[0, -20]}>
+            {spot.name}
+          </Tooltip>
+        </Marker>
+      ))}
+    </MapContainer>
+  );
+}
+
+// Side Bar Area
+function SideBar({ spots }) {
+  return (
+    <div className="side-bar">
+      <h2>
+        도장 찍기 순서표<button className="help">?</button>
+      </h2>
+      <SpotList spots={spots} />
+    </div>
+  );
+}
+
+function SpotList({ spots }) {
+  return (
+    <ul className="spot-list">
+      {spots
+        .filter((spot) => spot.hasStamp)
+        .map((spot) => (
+          <Spot spot={spot} />
+        ))}
+      <SpotFinal spots={spots} />
+    </ul>
+  );
+}
+
+function Spot({ spot }) {
+  return (
+    <li className="spot-box" key={spot.id}>
+      <h3>
+        <span className="number">1</span>
+        {spot.name}
+      </h3>
+    </li>
+  );
+}
+
+function SpotFinal({ spots }) {
+  return (
+    <li className="spot-box final-spot" key="final">
+      <h3 className="final-spot">{spots[0].name}</h3>
+    </li>
   );
 }
