@@ -127,12 +127,9 @@ export default function App() {
   ];
 
   return (
-    <div style={{ height: '100vh' }}>
-      <MapContainer
-        center={position}
-        zoom={16}
-        style={{ height: '100%', width: '100%' }}
-      >
+    <div className="stamp-tour">
+      {/* Map Area*/}
+      <MapContainer center={position} zoom={16} className="map">
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap contributors"
@@ -150,6 +147,28 @@ export default function App() {
           </Marker>
         ))}
       </MapContainer>
+
+      {/* List Area */}
+      <div className="side-bar">
+        <h1>
+          도장 찍기 순서표<button className="help">?</button>
+        </h1>
+        <ul className="spot-list">
+          {spots
+            .filter((spot) => spot.hasStamp)
+            .map((spot) => (
+              <li className="spot-box" key={spot.id}>
+                <h2>
+                  <span className="number">1</span>
+                  {spot.name}
+                </h2>
+              </li>
+            ))}
+          <li className="spot-box final-spot" key="final">
+            <h2 className="final-spot">경복궁 종합안내소</h2>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }
