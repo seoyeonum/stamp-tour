@@ -156,6 +156,11 @@ function Logo() {
 
 // StampMap Area
 function StampMap({ position, spots }) {
+  // Marker Click Function
+  function handleSelectedSpot(spot) {
+    console.log(spot.name);
+  }
+
   return (
     <main>
       <MapContainer center={position} zoom={15} className="map">
@@ -167,10 +172,11 @@ function StampMap({ position, spots }) {
           <Marker
             position={[spot.lat, spot.lng]}
             icon={spot.hasStamp ? blueIcon : redIcon}
+            eventHandlers={{ click: () => handleSelectedSpot(spot) }}
             key={spot.id}
           >
             {/* <Popup>{spot.name}</Popup> */}
-            <Tooltip direction="top" offset={[0, -20]}>
+            <Tooltip direction="top" offset={[0, -40]}>
               {spot.name}
             </Tooltip>
           </Marker>
@@ -197,19 +203,19 @@ function SpotList({ spots }) {
     <ul className="spot-list">
       {spots
         .filter((spot) => spot.hasStamp)
-        .map((spot) => (
-          <Spot spot={spot} />
+        .map((spot, i) => (
+          <Spot spot={spot} num={i} key={spot.id} />
         ))}
       <SpotFinal spots={spots} />
     </ul>
   );
 }
 
-function Spot({ spot }) {
+function Spot({ spot, num }) {
   return (
-    <li className="spot-box" key={spot.id}>
+    <li className="spot-box selected">
       <h3>
-        <span className="number">1</span>
+        <span className="number">{num < 9 ? `0${num + 1}` : num + 1}</span>
         {spot.name}
       </h3>
     </li>

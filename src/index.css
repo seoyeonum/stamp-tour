@@ -41,10 +41,14 @@ main {
 }
 
 .spot-box {
-  border: 2px solid #8d4ba7;
+  border: 2px solid #dadadace;
   padding: 0px 15px;
   margin-bottom: 10px;
   border-radius: 10px;
+}
+
+.selected {
+  border: 2px solid #8d4ba7;
 }
 
 .help {
@@ -58,7 +62,7 @@ main {
 .number {
   color: #8d4ba7;
   font-size: medium;
-  border: 1px solid #8d4ba7;
+  border: 2px solid #8d4ba7;
   padding: 5px 12px;
   margin: 10px;
   border-radius: 20px;
