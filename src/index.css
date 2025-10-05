@@ -7,6 +7,10 @@ header > h1 {
   margin: 10px 0px;
 }
 
+main {
+  height: 100vh;
+}
+
 .stamp-tour {
   position: relative;
   height: 100vh;
