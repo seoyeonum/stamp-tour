@@ -1,5 +1,6 @@
 import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
 import L from 'leaflet'; // Marker 색상 변경을 위한 import 문
+import { useState } from 'react';
 
 // Marker Icon - Red
 const redIcon = new L.Icon({
@@ -126,13 +127,32 @@ export default function App() {
     },
   ];
 
+  const [selectedSpots, setSelectedSpots] = useState([]);
+  const count = selectedSpots.length;
+
+  // Marker Click Function
+  function handleAddSpot(spot) {
+    console.log(spot.name); // clicked spot right now
+
+    // ONLY hasStamp spot (can be added)
+    if (!spot.hasStamp) return;
+
+    // prevent of duplicate addition
+    if (selectedSpots.some((exist) => exist.id === spot.id)) return;
+
+    setSelectedSpots((selectedSpots) => [...selectedSpots, spot]);
+  }
+
   return (
     <div className="stamp-tour">
       <Logo />
-      <StampMap position={position} spots={spots} />
-
-      {/* List Area */}
-      <SideBar spots={spots} />
+      <StampMap
+        position={position}
+        spots={spots}
+        onAddSpot={handleAddSpot}
+        count={count}
+      />
+      <SideBar spots={spots} selectedSpots={selectedSpots} count={count} />
     </div>
   );
 }
@@ -155,12 +175,7 @@ function Logo() {
 }
 
 // StampMap Area
-function StampMap({ position, spots }) {
-  // Marker Click Function
-  function handleSelectedSpot(spot) {
-    console.log(spot.name);
-  }
-
+function StampMap({ position, spots, onAddSpot, count }) {
   return (
     <main>
       <MapContainer center={position} zoom={15} className="map">
@@ -172,7 +187,9 @@ function StampMap({ position, spots }) {
           <Marker
             position={[spot.lat, spot.lng]}
             icon={spot.hasStamp ? blueIcon : redIcon}
-            eventHandlers={{ click: () => handleSelectedSpot(spot) }}
+            eventHandlers={{
+              click: () => onAddSpot(spot),
+            }}
             key={spot.id}
           >
             {/* <Popup>{spot.name}</Popup> */}
@@ -187,26 +204,27 @@ function StampMap({ position, spots }) {
 }
 
 // Side Bar Area
-function SideBar({ spots }) {
+function SideBar({ spots, selectedSpots, count }) {
   return (
     <aside className="side-bar">
       <h2>
-        도장 찍기 순서표<button className="help">?</button>
+        도장 찍기 순서표
+        <button className="help">?</button>
       </h2>
-      <SpotList spots={spots} />
+      <SpotList spots={spots} selectedSpots={selectedSpots} count={count} />
     </aside>
   );
 }
 
-function SpotList({ spots }) {
+function SpotList({ spots, selectedSpots, count }) {
   return (
     <ul className="spot-list">
-      {spots
-        .filter((spot) => spot.hasStamp)
-        .map((spot, i) => (
-          <Spot spot={spot} num={i} key={spot.id} />
-        ))}
-      <SpotFinal spots={spots} />
+      {count === 0
+        ? '📌 도장이 비치된 장소를 눌러서 순서표에 장소를 추가합니다. ~.~'
+        : selectedSpots
+            .filter((spot) => spot.hasStamp) // selectedSpots에 저장된 spot이더라도 stamp가 있다면 list에 표시되지 않음
+            .map((spot, i) => <Spot spot={spot} num={i} key={spot.id} />)}
+      {count === 10 ? <SpotFinal spots={spots} /> : ''}
     </ul>
   );
 }
