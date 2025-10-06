@@ -143,6 +143,11 @@ export default function App() {
     setSelectedSpots((selectedSpots) => [...selectedSpots, spot]);
   }
 
+  function handleResetList() {
+    const confirmReset = window.confirm('⚠ 선택한 순서표를 초기화합니다. ⚠');
+    if (confirmReset) setSelectedSpots((selectedSpots) => []);
+  }
+
   return (
     <div className="stamp-tour">
       <Logo />
@@ -152,7 +157,12 @@ export default function App() {
         onAddSpot={handleAddSpot}
         count={count}
       />
-      <SideBar spots={spots} selectedSpots={selectedSpots} count={count} />
+      <SideBar
+        spots={spots}
+        selectedSpots={selectedSpots}
+        onResetList={handleResetList}
+        count={count}
+      />
     </div>
   );
 }
@@ -204,14 +214,15 @@ function StampMap({ position, spots, onAddSpot, count }) {
 }
 
 // Side Bar Area
-function SideBar({ spots, selectedSpots, count }) {
+function SideBar({ spots, selectedSpots, count, onResetList }) {
   return (
     <aside className="side-bar">
-      <h2>
-        도장 찍기 순서표
-        <button className="help">?</button>
-      </h2>
+      <h2>도장 찍기 순서표</h2>
       <SpotList spots={spots} selectedSpots={selectedSpots} count={count} />
+
+      <button className="btn-reset" onClick={onResetList}>
+        장소 재설정
+      </button>
     </aside>
   );
 }
@@ -220,10 +231,10 @@ function SpotList({ spots, selectedSpots, count }) {
   return (
     <ul className="spot-list">
       {count === 0
-        ? '📌 도장이 비치된 장소를 눌러서 순서표에 장소를 추가합니다. ~.~'
-        : selectedSpots
-            .filter((spot) => spot.hasStamp) // selectedSpots에 저장된 spot이더라도 stamp가 있다면 list에 표시되지 않음
-            .map((spot, i) => <Spot spot={spot} num={i} key={spot.id} />)}
+        ? '📌 지도에서 도장이 비치된 장소를 눌러 순서표에 장소를 추가합니다.'
+        : selectedSpots.map((spot, i) => (
+            <Spot spot={spot} num={i} key={spot.id} />
+          ))}
       {count === 10 ? <SpotFinal spots={spots} /> : ''}
     </ul>
   );

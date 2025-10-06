@@ -78,3 +78,18 @@ li > h3 {
   color: white;
   background-color: #8d4ba7;
 }
+
+.btn-reset {
+  text-align: center;
+  color: white;
+  background-color: #8d4ba7;
+  padding: 0px 15px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: 2px solid #8d4ba7;
+}
+
+.btn-reset:hover {
+  background-color: #a473b7;
+  border: 2px solid #a473b7;
+}
