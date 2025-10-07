@@ -131,20 +131,26 @@ export default function App() {
   const count = selectedSpots.length;
 
   // Marker Click Function
-  function handleAddSpot(spot, count) {
+  function handleAddSpot(spots, spot, count) {
     console.log(spot.name); // clicked spot right now
 
     // 첫 번째 장소는 종합 안내소
     if (count === 0 && spot.hasStamp) {
-      window.alert('첫 번째 장소는 종합 안내소를 선택합니다.');
+      window.alert('📌 첫 번째 장소는 종합 안내소를 선택합니다.');
       return;
     }
 
     // 이후 ONLY hasStamp spot만 추가 가능
-    if (count > 0 && !spot.hasStamp) return;
+    if (count > 0 && !spot.hasStamp) {
+      window.alert('📌 종합안내소는 첫 번째 장소로만 선택 가능합니다.');
+      return;
+    }
 
     // 기존 클릭 장소 중복 추가 방지
-    if (selectedSpots.some((exist) => exist.id === spot.id)) return;
+    if (selectedSpots.some((exist) => exist.id === spot.id)) {
+      window.alert('📌 이미 추가한 장소입니다.');
+      return;
+    }
 
     setSelectedSpots((selectedSpots) => [...selectedSpots, spot]);
   }
@@ -204,7 +210,7 @@ function StampMap({ position, spots, onAddSpot, count }) {
             position={[spot.lat, spot.lng]}
             icon={spot.hasStamp ? blueIcon : redIcon}
             eventHandlers={{
-              click: () => onAddSpot(spot, count),
+              click: () => onAddSpot(spots, spot, count),
             }}
             key={spot.id}
           >
@@ -224,9 +230,24 @@ function SideBar({ spots, selectedSpots, count, onResetList }) {
   return (
     <aside className="side-bar">
       <h2>도장 찍기 순서표</h2>
-      {count === 0
-        ? '📌 지도에서 도장이 비치된 장소를 눌러 순서표에 장소를 추가합니다.'
-        : ''}
+      {count === 0 ? (
+        <>
+          <h3>📌 이용 안내</h3>
+          <ul className="spot-list">
+            <li>
+              ① 지도에서 도장이 비치된 장소를 눌러 순서표에 장소를 추가합니다.
+            </li>
+            <li>② 시작 장소는 종합관리소를 선택합니다.</li>
+            <li>
+              ③ 완주 기념품 수령처(경복궁 종합관리소)는 스탬프 투어 스팟 10곳을
+              모두 추가 시 자동으로 순서표에 추가됩니다.
+            </li>
+            <li>④ 아래 '장소 재설정' 버튼을 클릭하면 목록이 초기화됩니다.</li>
+          </ul>
+        </>
+      ) : (
+        ''
+      )}
       <SpotList spots={spots} selectedSpots={selectedSpots} count={count} />
 
       <button className="btn-reset" onClick={onResetList}>
@@ -239,37 +260,36 @@ function SideBar({ spots, selectedSpots, count, onResetList }) {
 function SpotList({ spots, selectedSpots, count }) {
   return (
     <ul className="spot-list">
-      {/* 시작 장소 */}
-      {count !== 0 ? <SpotFinal spot={selectedSpots[0]} /> : ''}
-
-      {/* 스탬프 10곳 */}
+      {/* 시작 장소 1곳 + 스탬프 10곳 */}
       {selectedSpots
-        .filter((spot) => spot.hasStamp)
+        // .filter((spot) => spot.hasStamp)
         .map((spot, i) => (
           <Spot spot={spot} num={i} key={spot.id} />
         ))}
 
       {/* 최종 장소 */}
-      {count === 11 ? <SpotFinal spot={spots[0]} /> : ''}
+      {count === 11 ? <Spot spot={spots[0]} key="final-spot" /> : ''}
     </ul>
   );
 }
 
 function Spot({ spot, num }) {
   return (
-    <li className="spot-box">
-      <h3>
-        <span className="number">{num < 9 ? `0${num + 1}` : num + 1}</span>
-        {spot.name}
-      </h3>
-    </li>
-  );
-}
-
-function SpotFinal({ spot }) {
-  return (
-    <li className="spot-box final-spot" key="final">
-      <h3 className="final-spot">{spot.name}</h3>
-    </li>
+    <>
+      {spot.hasStamp ? (
+        // 스탬프가 있는 장소의 경우
+        <li className="spot-box">
+          <h3>
+            <span className="number">{num < 10 ? `0${num}` : num}</span>
+            {spot.name}
+          </h3>
+        </li>
+      ) : (
+        // 스탬프가 없는 장소의 경우
+        <li className="spot-box info-spot">
+          <h3 className="info-spot">{spot.name}</h3>
+        </li>
+      )}
+    </>
   );
 }
