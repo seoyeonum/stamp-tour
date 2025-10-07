@@ -41,14 +41,10 @@ main {
 }
 
 .spot-box {
-  border: 2px solid #dadadace;
+  border: 2px solid #8d4ba7;
   padding: 0px 15px;
   margin-bottom: 10px;
   border-radius: 10px;
-}
-
-.selected {
-  border: 2px solid #8d4ba7;
 }
 
 .help {

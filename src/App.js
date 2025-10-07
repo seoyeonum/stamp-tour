@@ -131,13 +131,19 @@ export default function App() {
   const count = selectedSpots.length;
 
   // Marker Click Function
-  function handleAddSpot(spot) {
+  function handleAddSpot(spot, count) {
     console.log(spot.name); // clicked spot right now
 
-    // ONLY hasStamp spot (can be added)
-    if (!spot.hasStamp) return;
+    // 첫 번째 장소는 종합 안내소
+    if (count === 0 && spot.hasStamp) {
+      window.alert('첫 번째 장소는 종합 안내소를 선택합니다.');
+      return;
+    }
 
-    // prevent of duplicate addition
+    // 이후 ONLY hasStamp spot만 추가 가능
+    if (count > 0 && !spot.hasStamp) return;
+
+    // 기존 클릭 장소 중복 추가 방지
     if (selectedSpots.some((exist) => exist.id === spot.id)) return;
 
     setSelectedSpots((selectedSpots) => [...selectedSpots, spot]);
@@ -198,7 +204,7 @@ function StampMap({ position, spots, onAddSpot, count }) {
             position={[spot.lat, spot.lng]}
             icon={spot.hasStamp ? blueIcon : redIcon}
             eventHandlers={{
-              click: () => onAddSpot(spot),
+              click: () => onAddSpot(spot, count),
             }}
             key={spot.id}
           >
@@ -218,6 +224,9 @@ function SideBar({ spots, selectedSpots, count, onResetList }) {
   return (
     <aside className="side-bar">
       <h2>도장 찍기 순서표</h2>
+      {count === 0
+        ? '📌 지도에서 도장이 비치된 장소를 눌러 순서표에 장소를 추가합니다.'
+        : ''}
       <SpotList spots={spots} selectedSpots={selectedSpots} count={count} />
 
       <button className="btn-reset" onClick={onResetList}>
@@ -230,19 +239,25 @@ function SideBar({ spots, selectedSpots, count, onResetList }) {
 function SpotList({ spots, selectedSpots, count }) {
   return (
     <ul className="spot-list">
-      {count === 0
-        ? '📌 지도에서 도장이 비치된 장소를 눌러 순서표에 장소를 추가합니다.'
-        : selectedSpots.map((spot, i) => (
-            <Spot spot={spot} num={i} key={spot.id} />
-          ))}
-      {count === 10 ? <SpotFinal spots={spots} /> : ''}
+      {/* 시작 장소 */}
+      {count !== 0 ? <SpotFinal spot={selectedSpots[0]} /> : ''}
+
+      {/* 스탬프 10곳 */}
+      {selectedSpots
+        .filter((spot) => spot.hasStamp)
+        .map((spot, i) => (
+          <Spot spot={spot} num={i} key={spot.id} />
+        ))}
+
+      {/* 최종 장소 */}
+      {count === 11 ? <SpotFinal spot={spots[0]} /> : ''}
     </ul>
   );
 }
 
 function Spot({ spot, num }) {
   return (
-    <li className="spot-box selected">
+    <li className="spot-box">
       <h3>
         <span className="number">{num < 9 ? `0${num + 1}` : num + 1}</span>
         {spot.name}
@@ -251,10 +266,10 @@ function Spot({ spot, num }) {
   );
 }
 
-function SpotFinal({ spots }) {
+function SpotFinal({ spot }) {
   return (
     <li className="spot-box final-spot" key="final">
-      <h3 className="final-spot">{spots[0].name}</h3>
+      <h3 className="final-spot">{spot.name}</h3>
     </li>
   );
 }
