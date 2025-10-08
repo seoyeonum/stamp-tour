@@ -207,6 +207,8 @@ function Logo() {
 function StampMap({ position, spots, onAddSpot, count, selectedSpots }) {
   // selected spot의 위치 정보 배열
   const linePositions = selectedSpots.map((spot) => [spot.lat, spot.lng]);
+  // FIXME: the line from 10th stamp spot to the final spot is not displayed
+  // → think the reason is that the final spot is not included in selectedSpots
 
   return (
     <main>
@@ -288,6 +290,7 @@ function SpotList({ spots, selectedSpots, count }) {
           <Spot spot={spot} num={i} key={spot.id} />
         ))}
 
+      {/* FIXME: add the final spot into selectedSpots and delete the code below (line 295)*/}
       {/* 최종 장소 */}
       {count === 11 ? <Spot spot={spots[0]} key="final-spot" /> : ''}
     </ul>
