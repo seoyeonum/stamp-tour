@@ -32,6 +32,13 @@ const blueIcon = new L.Icon({
 
 export default function App() {
   const position = [37.574419, 126.982628]; // 우정총국 (지도 중앙)
+  const finalSpot = {
+    id: 99,
+    name: '경복궁 종합안내소 (흥례문)',
+    lat: 37.576832,
+    lng: 126.976724,
+    hasStamp: false,
+  }; // 경복궁 종합안내소 (최종 장소)
   const spots = [
     {
       id: 10,
@@ -137,7 +144,7 @@ export default function App() {
   const count = selectedSpots.length;
 
   // Marker Click Function
-  function handleAddSpot(spots, spot, count) {
+  function handleAddSpot(spot, count, finalSpot) {
     console.log(spot.name); // clicked spot right now
 
     // 첫 번째 장소는 종합 안내소
@@ -159,11 +166,17 @@ export default function App() {
     }
 
     setSelectedSpots((selectedSpots) => [...selectedSpots, spot]);
+    console.log(selectedSpots, count);
+
+    // 시작 장소 + 스탬프 10곳 모두 선택 시 최종 장소 추가
+    // (※ 단, Array의 길이는 handleAddSpot 함수 종료 후 반영되므로 11이 아닌 10)
+    if (count === 10)
+      setSelectedSpots((selectedSpots) => [...selectedSpots, finalSpot]);
   }
 
   function handleResetList() {
     const confirmReset = window.confirm('⚠ 선택한 순서표를 초기화합니다. ⚠');
-    if (confirmReset) setSelectedSpots((selectedSpots) => []);
+    if (confirmReset) setSelectedSpots([]);
   }
 
   return (
@@ -175,6 +188,7 @@ export default function App() {
         onAddSpot={handleAddSpot}
         count={count}
         selectedSpots={selectedSpots}
+        finalSpot={finalSpot}
       />
       <SideBar
         spots={spots}
@@ -204,11 +218,16 @@ function Logo() {
 }
 
 // StampMap Area
-function StampMap({ position, spots, onAddSpot, count, selectedSpots }) {
+function StampMap({
+  position,
+  spots,
+  onAddSpot,
+  count,
+  selectedSpots,
+  finalSpot,
+}) {
   // selected spot의 위치 정보 배열
   const linePositions = selectedSpots.map((spot) => [spot.lat, spot.lng]);
-  // FIXME: the line from 10th stamp spot to the final spot is not displayed
-  // → think the reason is that the final spot is not included in selectedSpots
 
   return (
     <main>
@@ -233,7 +252,7 @@ function StampMap({ position, spots, onAddSpot, count, selectedSpots }) {
             position={[spot.lat, spot.lng]}
             icon={spot.hasStamp ? blueIcon : redIcon}
             eventHandlers={{
-              click: () => onAddSpot(spots, spot, count),
+              click: () => onAddSpot(spot, count, finalSpot),
             }}
             key={spot.id}
           >
@@ -280,19 +299,14 @@ function SideBar({ spots, selectedSpots, count, onResetList }) {
   );
 }
 
-function SpotList({ spots, selectedSpots, count }) {
+// function SpotList({ spots, selectedSpots, count }) {
+function SpotList({ selectedSpots }) {
   return (
     <ul className="spot-list">
-      {/* 시작 장소 1곳 + 스탬프 10곳 */}
-      {selectedSpots
-        // .filter((spot) => spot.hasStamp)
-        .map((spot, i) => (
-          <Spot spot={spot} num={i} key={spot.id} />
-        ))}
-
-      {/* FIXME: add the final spot into selectedSpots and delete the code below (line 295)*/}
-      {/* 최종 장소 */}
-      {count === 11 ? <Spot spot={spots[0]} key="final-spot" /> : ''}
+      {/* 시작 장소 1곳 + 스탬프 10곳 + 최종 장소 1곳*/}
+      {selectedSpots.map((spot, i) => (
+        <Spot spot={spot} num={i} key={spot.id} />
+      ))}
     </ul>
   );
 }
