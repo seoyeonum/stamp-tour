@@ -1,4 +1,10 @@
-import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Tooltip,
+  Polyline,
+} from 'react-leaflet';
 import L from 'leaflet'; // Marker 색상 변경을 위한 import 문
 import { useState } from 'react';
 
@@ -168,6 +174,7 @@ export default function App() {
         spots={spots}
         onAddSpot={handleAddSpot}
         count={count}
+        selectedSpots={selectedSpots}
       />
       <SideBar
         spots={spots}
@@ -197,7 +204,10 @@ function Logo() {
 }
 
 // StampMap Area
-function StampMap({ position, spots, onAddSpot, count }) {
+function StampMap({ position, spots, onAddSpot, count, selectedSpots }) {
+  // selected spot의 위치 정보 배열
+  const linePositions = selectedSpots.map((spot) => [spot.lat, spot.lng]);
+
   return (
     <main>
       <MapContainer center={position} zoom={15} className="map">
@@ -205,6 +215,17 @@ function StampMap({ position, spots, onAddSpot, count }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap contributors"
         />
+
+        {linePositions.length > 1 && (
+          <Polyline
+            positions={linePositions}
+            color="#007bff"
+            weight={4}
+            opacity={0.8}
+            dashArray="5,10"
+          />
+        )}
+
         {spots.map((spot) => (
           <Marker
             position={[spot.lat, spot.lng]}
