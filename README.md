@@ -1,70 +1,54 @@
-# Getting Started with Create React App
+# 🍁 Stamp Tour
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<img src="./assets/1.select_spot.JPG" alt="Stamp Tour 프로젝트 캡처" width="600"/>
 
-## Available Scripts
+## 🎯 프로젝트 소개
+- React 를 기반으로 하는 클라이언트 사이드 웹 어플리케이션
+- 스탬프 투어 스팟 위치를 지도 위에 표시하여 보여주고, 사용자가 선택한 스팟을 순서표로 만들어 한눈에 파악하도록 돕는 프로그램
 
-In the project directory, you can run:
+### 개발 기간
+- 2025.10.03. ~ 2025.10.10. (8 days)
 
-### `npm start`
+### 개발 인원
+- 1명 (본인)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 📁 파일 구조
+```
+stamp-tour
+ ├ public/
+ │  ├ index.html
+ │  └ ...
+ ├ src/
+ │  ├ index.js
+ │  ├ index.css
+ │  └ components/
+ │    ├ App.js
+ │    ├ SideBar.js
+ │    ├ StampMap.js
+ │    └ ...
+ ├ ...
+ └ README.md
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📚 사용 기술
+### Frontend
+- JavaScript, HTML, CSS: 웹 페이지의 기본 구조와 스타일 구성 및 사용자와 상호작용하는 동적 기능 구현
+- React: component 와 JSX 의 사용으로 동일 코드의 반복을 줄이고 가독성을 향상, 웹 어플리케이션을 비교적 빠르게 구현
+### Tools
+- Git: 버전 관리와 코드 변경 이력 추적
+- GitHub: 원격 저장소를 활용한 코드 작업 접근성 향상
+- node.js: Node Package Manager 를 통하여 개발용 로컬 서버 (live-server)를 활용
+- Visual Studio Code : JavaScript 기반 프로젝트의 코드 작성·실행·디버깅 지원
 
-### `npm test`
+## ✨ 주요 기능
+- 스탬프 투어 스팟 및 종합안내소 위치 표시
+- 각 스팟을 선택하여로 스탬프 투어 순서표에 추가
+- 선택된 스탬프 장소 구간별 연결선 표시
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🚀 실행 방법
+```
+git clone https://github.com/seoyeonum/stamp-tour.git
+cd stamp-tour
+npm install
+npm start
+```
