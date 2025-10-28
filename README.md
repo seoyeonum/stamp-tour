@@ -9,7 +9,7 @@
 
 ### 배포 링크
 
-[stamp-tour-amber.vercel.app](stamp-tour-amber.vercel.app)
+[stamp-tour-amber.vercel.app](https://stamp-tour-amber.vercel.app)
 
 ### 개발 목표
 
@@ -69,7 +69,7 @@ stamp-tour
 
 ### 1. 배포 버전
 
-다음 링크([stamp-tour-amber.vercel.app](stamp-tour-amber.vercel.app))에서 확인 가능
+다음 링크([stamp-tour-amber.vercel.app](https://stamp-tour-amber.vercel.app))에서 확인 가능
 
 ### 2. 로컬 실행
 
