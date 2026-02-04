@@ -1,8 +1,8 @@
 import L from 'leaflet'; // Marker 색상 변경을 위한 import 문
 import { useState } from 'react';
-import Logo from './Logo';
+import Description from './Description';
 import StampMap from './StampMap';
-import SideBar from './SideBar';
+import SpotList from './SpotList';
 
 // Marker Icon - Red
 export const redIcon = new L.Icon({
@@ -200,8 +200,8 @@ export default function App() {
       spots.map((exist) =>
         !exist.hasStamp && exist.id === spot.id
           ? { ...exist, isSelected: true }
-          : exist
-      )
+          : exist,
+      ),
     );
 
     // selectedSpots에 spot 추가
@@ -214,8 +214,10 @@ export default function App() {
       setSelectedSpots((selectedSpots) => [...selectedSpots, finalSpot]);
       setSpots((spots) =>
         spots.map((exist) =>
-          exist.name === finalSpot.name ? { ...exist, isSelected: true } : exist
-        )
+          exist.name === finalSpot.name
+            ? { ...exist, isSelected: true }
+            : exist,
+        ),
       );
     }
   }
@@ -230,22 +232,57 @@ export default function App() {
   }
 
   return (
-    <div className="stamp-tour">
-      <Logo />
-      <StampMap
-        position={position}
-        spots={spots}
-        onAddSpot={handleAddSpot}
-        count={count}
-        selectedSpots={selectedSpots}
-        finalSpot={finalSpot}
-      />
-      <SideBar
-        spots={spots}
-        selectedSpots={selectedSpots}
-        onResetList={handleResetList}
-        count={count}
-      />
+    <div className="app">
+      <Nav />
+
+      <div className="layout">
+        {count === 0 ? (
+          <Description />
+        ) : (
+          <SpotList
+            // spots={spots}
+            selectedSpots={selectedSpots}
+            onResetList={handleResetList}
+            // count={count}
+          />
+        )}
+        <main className="map-wrapper">
+          <StampMap
+            position={position}
+            spots={spots}
+            onAddSpot={handleAddSpot}
+            count={count}
+            selectedSpots={selectedSpots}
+            finalSpot={finalSpot}
+          />
+        </main>
+      </div>
     </div>
+  );
+}
+
+// TOP NAVIGATION
+function Nav() {
+  return (
+    <nav className="nav">
+      <img src="logo.png" alt="Logo" className="nav__logo" />
+      <ul className="nav__links">
+        <li class="nav__item">
+          <a class="nav__link" href="#">
+            HOME
+          </a>
+        </li>
+        <li class="nav__item">
+          <a class="nav__link" href="#">
+            StampTour
+          </a>
+        </li>
+        <li class="nav__item">
+          <a class="nav__link" href="#">
+            MyPage
+          </a>
+        </li>
+      </ul>
+    </nav>
   );
 }
