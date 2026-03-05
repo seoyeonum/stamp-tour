@@ -266,6 +266,7 @@ function Nav() {
   return (
     <nav className="nav">
       <img src="logo.png" alt="Logo" className="nav__logo" />
+      {/*
       <ul className="nav__links">
         <li class="nav__item">
           <a class="nav__link" href="#">
@@ -283,6 +284,7 @@ function Nav() {
           </a>
         </li>
       </ul>
+      */}
     </nav>
   );
 }

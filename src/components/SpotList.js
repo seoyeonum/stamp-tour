@@ -1,6 +1,17 @@
+import { useEffect, useRef } from 'react';
+
 // Side Bar Area
 export default function SpotList({ selectedSpots, onResetList }) {
   const title = '도장 찍기 순서표';
+
+  const bottomRef = useRef(null); // 참조 변수 생성
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: 'smooth',
+    });
+  }, [selectedSpots]); // selectedSpots에 변화 있을 때마다 코드 실행
+
   return (
     // <aside className="aside side-bar">
     <aside className="aside">
@@ -10,6 +21,8 @@ export default function SpotList({ selectedSpots, onResetList }) {
         {selectedSpots.map((spot, i) => (
           <Spot spot={spot} num={i} key={spot.id} />
         ))}
+        <li ref={bottomRef} />
+        {/*스크롤 참조 지점 (DOM요소), semantic 구조 따라 ul 내부는 li 태그만!*/}
       </ul>
       <button className="btn-reset" onClick={onResetList}>
         장소 선택 초기화
