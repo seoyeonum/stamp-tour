@@ -83,16 +83,29 @@ body {
 }
 
 .aside {
-  width: 27rem; /* 사이드바 너비 */
+  width: 27rem; /*사이드바 너비*/
   flex-shrink: 0;
   border-right: 1px solid var(--color-bg);
   overflow-y: auto; /* 길어지면 스크롤 */
   padding: 1rem 2rem;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+}
+
+/* 모바일 환경 고려한 반응형 웹 */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column-reverse;
+  }
+
+  .aside {
+    width: auto;
+    height: 14em;
+    font-size: 1.2rem;
+  }
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 1.8rem;
 }
 
 .date,
@@ -102,7 +115,9 @@ body {
 }
 
 .section {
-  padding: 1rem 0;
+  /* 위 | 오른쪽 | 아래 | 왼쪽 */
+  /* 상하 | 좌우 */
+  padding: 0.5rem 0;
 }
 
 .map-wrapper {
@@ -112,6 +127,10 @@ body {
 .map {
   height: 100%;
   width: 100%;
+}
+
+.spot-name {
+  font-size: 1.2rem;
 }
 
 .spot-list {

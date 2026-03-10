@@ -47,7 +47,7 @@ export default function StampMap({
           }}
           key={spot.id}
         >
-          <Tooltip direction="top" offset={[0, -40]}>
+          <Tooltip className="spot-name" direction="top" offset={[0, -40]}>
             {spot.name}
           </Tooltip>
         </Marker>
