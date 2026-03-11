@@ -12,20 +12,20 @@ export default function StampMap({
   position,
   spots,
   onAddSpot,
-  count,
   selectedSpots,
-  finalSpot,
 }) {
   // selected spot의 위치 정보 배열
   const linePositions = selectedSpots.map((spot) => [spot.lat, spot.lng]);
+  const selectedCount = selectedSpots.length;
 
   return (
-    <MapContainer center={position} zoom={15} className="map">
+    <MapContainer center={position} zoom={14} className="map">
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; OpenStreetMap contributors"
       />
 
+      {/* selecedSpots 요소 간 연결선 출력 */}
       {linePositions.length > 1 && (
         <Polyline
           positions={linePositions}
@@ -36,14 +36,15 @@ export default function StampMap({
         />
       )}
 
+      {/* map 위 spot에 Marker 표시 */}
       {spots.map((spot) => (
         <Marker
           position={[spot.lat, spot.lng]}
           icon={
-            spot.isSelected ? violetIcon : spot.hasStamp ? blueIcon : redIcon
+            spot.hasStamp ? blueIcon : spot.isSelected ? violetIcon : redIcon
           }
           eventHandlers={{
-            click: () => onAddSpot(spot, count, finalSpot),
+            click: () => onAddSpot(spot, selectedCount),
           }}
           key={spot.id}
         >

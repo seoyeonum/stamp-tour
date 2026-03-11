@@ -168,45 +168,50 @@ export default function App() {
   ]);
 
   const [selectedSpots, setSelectedSpots] = useState([]);
-  const count = selectedSpots.length;
+  const selectedCount = selectedSpots.length;
+
+  // 메시지(경고창) 출력 함수
+  function printMessage(message) {
+    window.alert(message);
+  }
 
   // Marker Click Function
-  function handleAddSpot(spot, count, finalSpot) {
+  function handleAddSpot(clickedSpot, count, finalSpot) {
     // console.log(spot.name); // clicked spot right now
 
     // 첫 번째 장소는 종합 안내소
-    if (count === 0 && spot.hasStamp) {
-      const message = '📌 첫 번째 장소는 종합 안내소를 선택합니다.';
-      window.alert(message);
+    // : 아직 아무 장소도 클릭하지 않음 + 현재 클릭한 장소가 스탬프 스팟
+    if (count === 0 && clickedSpot.hasStamp) {
+      printMessage('📌 첫 번째 장소는 종합 안내소를 선택합니다.');
       return;
     }
 
     // 이후 ONLY hasStamp spot만 추가 가능
-    if (count > 0 && !spot.hasStamp) {
-      const message = '📌 종합안내소는 첫 번째 장소로만 선택 가능합니다.';
-      window.alert(message);
+    // : 어떤 장소(들)가 이미 클릭됨 + 현재 클릭한 장소가 종합 안내소
+    if (count > 0 && !clickedSpot.hasStamp) {
+      printMessage('📌 종합안내소는 첫 번째 장소로만 선택 가능합니다.');
       return;
     }
 
     // 기존 클릭 장소 중복 추가 방지
-    if (selectedSpots.some((exist) => exist.id === spot.id)) {
-      const message = '📌 이미 추가한 장소입니다.';
-      window.alert(message);
+    // : 현재 클릭한 장소의 id가 이미 클릭한 장소의 id 중 하나라도 일치
+    if (selectedSpots.some((exist) => exist.id === clickedSpot.id)) {
+      printMessage('📌 이미 추가한 장소입니다.');
       return;
     }
 
-    // Marker 클릭 시 종합안내소에 한하여 속성값 변경
+    // 1. Marker 클릭 시 종합안내소에 한하여 속성값 변경
+    // : 종합 안내소이며, 현재 선택한 clickedSpot과 id가 일치하는 장소면 "isSelected: true" 처리
     setSpots((spots) =>
       spots.map((exist) =>
-        !exist.hasStamp && exist.id === spot.id
+        !exist.hasStamp && exist.id === clickedSpot.id
           ? { ...exist, isSelected: true }
           : exist,
       ),
     );
 
-    // selectedSpots에 spot 추가
-    setSelectedSpots((selectedSpots) => [...selectedSpots, spot]);
-    console.log(selectedSpots, count);
+    // 2. selectedSpots에 clickedSpot 추가
+    setSelectedSpots((selectedSpots) => [...selectedSpots, clickedSpot]);
 
     // 시작 장소 + 스탬프 10곳 모두 선택 시 최종 장소 추가
     // (※ 단, Array의 길이는 handleAddSpot 함수 종료 후 반영되므로 11이 아닌 10)
@@ -225,10 +230,12 @@ export default function App() {
   function handleResetList() {
     const message = '⚠ 선택한 순서표를 초기화합니다. ⚠';
     const confirmReset = window.confirm(message);
-    if (confirmReset) {
-      setSelectedSpots([]);
-      spots.map((spot) => (spot.isSelected = false));
-    }
+
+    // Guard Clause
+    if (!confirmReset) return;
+
+    setSelectedSpots([]);
+    spots.map((spot) => (spot.isSelected = false));
   }
 
   return (
@@ -236,22 +243,22 @@ export default function App() {
       <Nav />
 
       <div className="layout">
-        {count === 0 ? (
-          <Description />
-        ) : (
-          <SpotList
-            // spots={spots}
-            selectedSpots={selectedSpots}
-            onResetList={handleResetList}
-            // count={count}
-          />
-        )}
+        <aside className="aside">
+          {selectedCount === 0 ? (
+            <Description />
+          ) : (
+            <SpotList
+              selectedSpots={selectedSpots}
+              onResetList={handleResetList}
+            />
+          )}
+        </aside>
         <main className="map-wrapper">
           <StampMap
             position={position}
             spots={spots}
             onAddSpot={handleAddSpot}
-            count={count}
+            count={selectedCount}
             selectedSpots={selectedSpots}
             finalSpot={finalSpot}
           />

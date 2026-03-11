@@ -13,7 +13,7 @@ export default function Description() {
   ];
 
   return (
-    <aside className="aside">
+    <>
       <h1 className="title">{title}</h1>
       <div className="section">
         <h2 className="date">{date} </h2>
@@ -29,11 +29,11 @@ export default function Description() {
       <div className="section">
         <h2 className="guideline">{subTitle}</h2>
         <ul className="spot-list">
-          {textGuideline.map((text) => (
-            <li>{text}</li>
+          {textGuideline.map((text, i) => (
+            <li key={i}>{text}</li> // 각 리스트(li)에 key 추가
           ))}
         </ul>
       </div>
-    </aside>
+    </>
   );
 }
