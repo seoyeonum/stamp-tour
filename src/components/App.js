@@ -192,7 +192,13 @@ export default function App() {
     // 기존 클릭 장소 중복 추가 방지
     // : 현재 클릭한 장소(clickedSpot=spot)의 isSelected: true
     if (clickedSpot.isSelected) {
-      printMessage('📌 이미 추가한 장소입니다.');
+      printMessage('💥 장소를 해제합니다.');
+      clickedSpot.isSelected = false;
+      setSelectedSpots((selectedSpots) =>
+        selectedSpots.filter(
+          (selectedSpot) => selectedSpot.id !== clickedSpot.id,
+        ),
+      );
       return;
     }
 
