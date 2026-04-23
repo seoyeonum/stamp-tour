@@ -1,5 +1,5 @@
 import L from 'leaflet'; // Marker 색상 변경을 위한 import 문
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Description from './Description';
 import StampMap from './StampMap';
 import SpotList from './SpotList';
@@ -37,129 +37,215 @@ export const violetIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
+// 우정총국 (지도 중앙)
+const position = [37.574419, 126.982628];
+
+// 전체 스탬프 투어 스팟 & 종합안내소 (API로부터 전달받은 placeData 가정)
+const placeData = {
+  spot00: {
+    id: 10,
+    name: '경복궁 종합안내소 (흥례문)', // 최종 장소
+    lat: 37.576832,
+    lng: 126.976724,
+    hasStamp: false,
+    isSelected: false,
+  },
+  spot01: {
+    id: 11,
+    name: '경복궁 집옥재',
+    lat: 37.58346,
+    lng: 126.976075,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot02: {
+    id: 12,
+    name: '경복궁 향원정',
+    lat: 37.582711,
+    lng: 126.977202,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot03: {
+    id: 13,
+    name: '경복궁 강녕전',
+    lat: 37.579537,
+    lng: 126.977017,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot04: {
+    id: 14,
+    name: '경복궁 계조당',
+    lat: 37.577893,
+    lng: 126.977884,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot05: {
+    id: 20,
+    name: '창덕궁 종합안내소 (돈화문)',
+    lat: 37.577723,
+    lng: 126.989805,
+    hasStamp: false,
+    isSelected: false,
+  },
+  spot06: {
+    id: 21,
+    name: '창덕궁 낙선재',
+    lat: 37.578745,
+    lng: 126.993507,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot07: {
+    id: 22,
+    name: '창덕궁 대조전',
+    lat: 37.580239,
+    lng: 126.992476,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot08: {
+    id: 30,
+    name: '덕수궁 종합안내소 (대한문)',
+    lat: 37.565052,
+    lng: 126.976668,
+    hasStamp: false,
+    isSelected: false,
+  },
+  spot09: {
+    id: 31,
+    name: '덕수궁 정관헌',
+    lat: 37.566453,
+    lng: 126.975649,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot10: {
+    id: 32,
+    name: '덕수궁 준명당',
+    lat: 37.566326,
+    lng: 126.974737,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot11: {
+    id: 33,
+    name: '덕수궁 즉조당',
+    lat: 37.566273,
+    lng: 126.974963,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot12: {
+    id: 40,
+    name: '창경궁 종합안내소 (홍화문)',
+    lat: 37.578792,
+    lng: 126.996511,
+    hasStamp: false,
+    isSelected: false,
+  },
+  spot13: {
+    id: 41,
+    name: '창경궁 명정전',
+    lat: 37.578758,
+    lng: 126.99491,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot14: {
+    id: 42,
+    name: '창경궁 통명전',
+    lat: 37.57968,
+    lng: 126.99374,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot15: {
+    id: 43,
+    name: '창경궁 대온실',
+    lat: 37.582954,
+    lng: 126.994051,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot16: {
+    id: 44,
+    name: '창경궁 영춘헌',
+    lat: 37.579937,
+    lng: 126.994799,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot17: {
+    id: 51,
+    name: '경희궁 숭정문',
+    lat: 37.571117,
+    lng: 126.968392,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot18: {
+    id: 61,
+    name: '종묘 정전',
+    lat: 37.57488,
+    lng: 126.993944,
+    hasStamp: true,
+    isSelected: false,
+  },
+  spot19: {
+    id: 62,
+    name: '종묘 영녕전',
+    lat: 37.575926,
+    lng: 126.992683,
+    hasStamp: true,
+    isSelected: false,
+  },
+};
+
+// 역대 스탬프 투어 스팟 & 종합안내소 모음 (API로부터 전달받은 seasonIdList 가정)
+const seasonIdList = {
+  autumn2025: [10, 11, 12, 20, 21, 30, 31, 32, 40, 41, 42, 43, 61, 62],
+  spring2026: [10, 13, 14, 20, 21, 22, 30, 31, 33, 40, 42, 44, 51, 61],
+};
+
 export default function App() {
-  // 우정총국 (지도 중앙)
-  const position = [37.574419, 126.982628];
+  ////////// VARIABLE //////////
 
-  // 전체 스탬프 투어 스팟 & 종합안내소 (API로부터 전달받은 data 가정)
-  const data = {
-    spot1: {
-      id: 10,
-      name: '경복궁 종합안내소 (흥례문)', // 최종 장소
-      lat: 37.576832,
-      lng: 126.976724,
-      hasStamp: false,
-      isSelected: false,
-    },
-    spot2: {
-      id: 11,
-      name: '경복궁 집옥재',
-      lat: 37.58346,
-      lng: 126.976075,
-      hasStamp: true,
-      isSelected: false,
-    },
-    spot3: {
-      id: 12,
-      name: '경복궁 향원정',
-      lat: 37.582711,
-      lng: 126.977202,
-      hasStamp: true,
-      isSelected: false,
-    },
-    spot4: {
-      id: 20,
-      name: '창덕궁 종합안내소 (돈화문)',
-      lat: 37.577723,
-      lng: 126.989805,
-      hasStamp: false,
-      isSelected: false,
-    },
-    spot5: {
-      id: 21,
-      name: '창덕궁 낙선재',
-      lat: 37.578745,
-      lng: 126.993507,
-      hasStamp: true,
-      isSelected: false,
-    },
-    spot6: {
-      id: 30,
-      name: '덕수궁 종합안내소 (대한문)',
-      lat: 37.565052,
-      lng: 126.976668,
-      hasStamp: false,
-      isSelected: false,
-    },
-    spot7: {
-      id: 31,
-      name: '덕수궁 정관헌',
-      lat: 37.566453,
-      lng: 126.975649,
-      hasStamp: true,
-      isSelected: false,
-    },
-    spot8: {
-      id: 32,
-      name: '덕수궁 준명당',
-      lat: 37.566326,
-      lng: 126.974737,
-      hasStamp: true,
-      isSelected: false,
-    },
-    spot9: {
-      id: 40,
-      name: '창경궁 종합안내소 (홍화문)',
-      lat: 37.578792,
-      lng: 126.996511,
-      hasStamp: false,
-      isSelected: false,
-    },
-    spot10: {
-      id: 41,
-      name: '창경궁 명정전',
-      lat: 37.578758,
-      lng: 126.99491,
-      hasStamp: true,
-      isSelected: false,
-    },
-    spot11: {
-      id: 42,
-      name: '창경궁 통명전',
-      lat: 37.57968,
-      lng: 126.99374,
-      hasStamp: true,
-      isSelected: false,
-    },
-    spot12: {
-      id: 43,
-      name: '창경궁 대온실',
-      lat: 37.582954,
-      lng: 126.994051,
-      hasStamp: true,
-      isSelected: false,
-    },
-    spot13: {
-      id: 51,
-      name: '종묘 정전',
-      lat: 37.57488,
-      lng: 126.993944,
-      hasStamp: true,
-      isSelected: false,
-    },
-    spot14: {
-      id: 52,
-      name: '종묘 영녕전',
-      lat: 37.575926,
-      lng: 126.992683,
-      hasStamp: true,
-      isSelected: false,
-    },
-  };
+  // 기본 선택 시즌: "2026 봄"
+  const [season, setSeason] = useState('spring2026');
 
-  const [spots, setSpots] = useState(Object.values(data));
+  // 선택 시즌에 따른 장소 배열 (지도 영역에 marker 표시 기준)
+  const [spots, setSpots] = useState(
+    Object.values(placeData).filter((spot) =>
+      seasonIdList[season].includes(spot.id),
+    ),
+  );
+
+  // 선택한 장소 배열 (기선택여부 판단 및 순서 포함)
   const [selectedSpots, setSelectedSpots] = useState([]);
-  const finalSpot = spots.find((spot) => spot.id === 10); // 원본 배열(spots)과 같은 객체 reference
+
+  // 최종 장소
+  // 원본 배열(spots)과 같은 객체 reference
+  const FINAL_SPOT_ID = 10;
+  const finalSpot = spots.find((spot) => spot.id === FINAL_SPOT_ID);
+
+  ////////// FUNCTION //////////
+
+  useEffect(() => {
+    setSpots(
+      Object.values(placeData).filter((spot) =>
+        seasonIdList[season].includes(spot.id),
+      ),
+    );
+
+    setSelectedSpots([]);
+  }, [season]);
+
+  function handleSeason(value) {
+    setSeason(value);
+  }
 
   // 메시지(경고창) 출력 함수
   function printMessage(message) {
@@ -193,7 +279,12 @@ export default function App() {
     // : 현재 클릭한 장소(clickedSpot=spot)의 isSelected: true
     if (clickedSpot.isSelected) {
       printMessage('💥 장소를 해제합니다.');
-      clickedSpot.isSelected = false;
+      setSpots((spots) =>
+        spots.map((spot) =>
+          spot.id === clickedSpot.id ? { ...spot, isSelected: false } : spot,
+        ),
+      );
+
       setSelectedSpots((selectedSpots) =>
         selectedSpots.filter(
           (selectedSpot) => selectedSpot.id !== clickedSpot.id,
@@ -245,12 +336,12 @@ export default function App() {
     if (!confirmReset) return;
 
     setSelectedSpots([]);
-    spots.map((spot) => (spot.isSelected = false));
+    setSpots((spots) => spots.map((spot) => ({ ...spot, isSelected: false })));
   }
 
   return (
     <div className="app">
-      <Nav />
+      <Nav season={season} onChangeSeason={handleSeason} />
 
       <div className="layout">
         <aside className="aside">
@@ -260,7 +351,7 @@ export default function App() {
               onResetList={handleResetList}
             />
           ) : (
-            <Description />
+            <Description season={season} />
           )}
         </aside>
         <main className="map-wrapper">
@@ -277,10 +368,16 @@ export default function App() {
 }
 
 // TOP NAVIGATION
-function Nav() {
+function Nav({ season, onChangeSeason }) {
+  // const [season, setSeason] = useState('spring2026');
+
   return (
     <nav className="nav">
       <img src="logo.png" alt="Logo" className="nav__logo" />
+      <select value={season} onChange={(e) => onChangeSeason(e.target.value)}>
+        <option value="spring2026">2026 봄 궁중문화축전</option>
+        <option value="autumn2025">2025 가을 궁중문화축전 </option>
+      </select>
       {/*
       <ul className="nav__links">
         <li class="nav__item">

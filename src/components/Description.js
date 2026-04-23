@@ -1,9 +1,22 @@
-export default function Description() {
-  const title = '2025 가을 궁중문화축전 스탬프 투어';
-  const date = '📅 10.8.(수)~10.12.(일) 9:00~18:00';
-  const place = '🧭 4대궁(경복궁, 창덕궁, 덕수궁, 창경궁) 및 종묘';
-  const siteUrl = 'https://www.kh.or.kr/fest';
+export default function Description({ season }) {
+  const data = {
+    autumn2025: {
+      title: '🍁2025 가을 궁중문화축전 스탬프 투어🍁',
+      date: '📅 10.8.(수)~10.12.(일) 9:00~18:00',
+      place: '🧭 4대궁(경복궁, 창덕궁, 덕수궁, 창경궁) 및 종묘',
+    },
+    spring2026: {
+      title: '🌸2026 봄 궁중문화축전 스탬프 투어🌸',
+      date: '📅 4.25.(토)~5.3.(일) 9:00~18:00',
+      place: '🧭 5대궁(경복궁, 창덕궁, 덕수궁, 창경궁, 경희궁) 및 종묘',
+    },
+  };
 
+  const selectedSeason = data[season];
+  const title = selectedSeason.title;
+  const date = selectedSeason.date;
+  const place = selectedSeason.place;
+  const siteUrl = 'https://www.kh.or.kr/fest';
   const subTitle = '📌 이용 안내';
   const textGuideline = [
     '① 지도에서 도장이 비치된 장소를 눌러 순서표에 장소를 추가합니다.',
