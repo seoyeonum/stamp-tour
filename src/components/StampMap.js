@@ -6,7 +6,7 @@ import {
   Tooltip,
 } from 'react-leaflet';
 import { violetIcon, blueIcon, redIcon } from './App';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // StampMap Area
 export default function StampMap({
@@ -19,6 +19,9 @@ export default function StampMap({
   const [routePositions, setRoutePosition] = useState([]);
   const selectedCount = selectedSpots.length;
 
+  // useRef: re-rendering에도 값을 유지!
+  const routeObject = useRef({});
+
   // 실제 도보 경로 계산 effect
   useEffect(() => {
     async function walkingRoutes() {
@@ -29,40 +32,51 @@ export default function StampMap({
       }
 
       // 선택 장소가 2군데 이상
-      let fullPath = []; // 2) fullPath 가 초기화
+      let fullPath = [];
 
       for (let i = 0; i < selectedSpots.length - 1; i++) {
         const start = selectedSpots[i];
         const end = selectedSpots[i + 1];
+        const routeKey = `${start.id}-${end.id}`; /////
 
-        // 3) 기존에 구해둔 route까지 모두 다시 fetch 해오는 불필요한 반복 request 발생
-        const url =
-          `https://router.project-osrm.org/route/v1/foot/` +
-          `${start.lng},${start.lat};${end.lng},${end.lat}` +
-          `?overview=full&geometries=geojson`;
+        let newRoute = routeObject.current[routeKey];
 
-        try {
-          const res = await fetch(url);
-          const data = await res.json();
+        // 이미 route를 구해서 routeObject에 routeKey가 있다면,
+        // !newRoute === false이므로 아래 조건문을 수행하지 않는다.
+        // 즉, 새로 route를 구하는 상황에만 아래 조건문에 진입한다.
+        if (!newRoute) {
+          const url =
+            `https://router.project-osrm.org/route/v1/foot/` +
+            `${start.lng},${start.lat};${end.lng},${end.lat}` +
+            `?overview=full&geometries=geojson`;
 
-          if (!data.routes || data.routes.length === 0) continue;
+          try {
+            const res = await fetch(url);
+            const data = await res.json();
 
-          // 새로 추가하는 경로 조각
-          const newRoute = data.routes[0].geometry.coordinates.map(
-            ([lng, lat]) => [lat, lng],
-          );
+            // fetch 한 데이터의 routes 가 존재하지 않는다면 반복문 내 아래 과정 통과 (미수행)
+            if (!data.routes || data.routes.length === 0) continue;
 
-          // 기존 경로들에 경로 조각 붙이기
-          fullPath = [...fullPath, ...newRoute];
-        } catch (error) {
-          console.log('도보 경로 불러오기 실패:', error);
+            // 새로 추가하는 경로 조각을 newRoute에 담아
+            newRoute = data.routes[0].geometry.coordinates.map(([lng, lat]) => [
+              lat,
+              lng,
+            ]);
+
+            // 현재 routeKey를 key로 routeObject에 저장
+            routeObject.current[routeKey] = newRoute;
+          } catch (error) {
+            console.log('도보 경로 불러오기 실패:', error);
+            continue;
+          }
         }
+        // 기존 경로들에 경로 조각 붙이기
+        fullPath = [...fullPath, ...newRoute];
       }
       setRoutePosition(fullPath);
     }
     walkingRoutes();
   }, [selectedSpots]);
-  // 1) selectedSpots가 update 될 때 마다
 
   return (
     <MapContainer center={position} zoom={14} className="map">
