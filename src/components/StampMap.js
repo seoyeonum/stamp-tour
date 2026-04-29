@@ -29,12 +29,13 @@ export default function StampMap({
       }
 
       // 선택 장소가 2군데 이상
-      let fullPath = [];
+      let fullPath = []; // 2) fullPath 가 초기화
 
       for (let i = 0; i < selectedSpots.length - 1; i++) {
         const start = selectedSpots[i];
         const end = selectedSpots[i + 1];
 
+        // 3) 기존에 구해둔 route까지 모두 다시 fetch 해오는 불필요한 반복 request 발생
         const url =
           `https://router.project-osrm.org/route/v1/foot/` +
           `${start.lng},${start.lat};${end.lng},${end.lat}` +
@@ -61,6 +62,7 @@ export default function StampMap({
     }
     walkingRoutes();
   }, [selectedSpots]);
+  // 1) selectedSpots가 update 될 때 마다
 
   return (
     <MapContainer center={position} zoom={14} className="map">
