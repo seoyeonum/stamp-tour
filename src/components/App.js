@@ -1,46 +1,14 @@
-import L from 'leaflet'; // Marker 색상 변경을 위한 import 문
 import { useEffect, useState } from 'react';
 import Description from './Description';
 import StampMap from './StampMap';
 import SpotList from './SpotList';
+import { printAlert, printConfirm } from './helper';
 
-// Marker Icon - Red
-export const redIcon = new L.Icon({
-  iconUrl:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-  shadowSize: [41, 41],
-});
-
-// Marker Icon - Blue
-export const blueIcon = new L.Icon({
-  iconUrl:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-  shadowSize: [41, 41],
-});
-
-// Marker Icon - Violet
-export const violetIcon = new L.Icon({
-  iconUrl:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-  shadowSize: [41, 41],
-});
-
+////////// API DATA (가정) //////////
 // 우정총국 (지도 중앙)
 const position = [37.574419, 126.982628];
 
-// 전체 스탬프 투어 스팟 & 종합안내소 (API로부터 전달받은 placeData 가정)
+// 전체 스탬프 투어 스팟 & 종합안내소
 const placeData = {
   spot00: {
     id: 10,
@@ -204,10 +172,24 @@ const placeData = {
   },
 };
 
-// 역대 스탬프 투어 스팟 & 종합안내소 모음 (API로부터 전달받은 seasonIdList 가정)
-const seasonIdList = {
-  autumn2025: [10, 11, 12, 20, 21, 30, 31, 32, 40, 41, 42, 43, 61, 62],
-  spring2026: [10, 13, 14, 20, 21, 22, 30, 31, 33, 40, 42, 44, 51, 61],
+// 역대 스탬프 투어 스팟 & 종합안내소 모음
+const seasonLists = {
+  autumn2025: {
+    title: '🍁2025 가을 궁중문화축전 스탬프 투어🍁',
+    date: '📅 10.8.(수)~10.12.(일) 9:00~18:00',
+    place: '🧭 4대궁(경복궁, 창덕궁, 덕수궁, 창경궁) 및 종묘',
+    idList: [10, 11, 12, 20, 21, 30, 31, 32, 40, 41, 42, 43, 61, 62],
+    finalSpotId: 10,
+    minStampCount: 10,
+  },
+  spring2026: {
+    title: '🌸2026 봄 궁중문화축전 스탬프 투어🌸',
+    date: '📅 4.25.(토)~5.3.(일) 9:00~18:00',
+    place: '🧭 5대궁(경복궁, 창덕궁, 덕수궁, 창경궁, 경희궁) 및 종묘',
+    idList: [10, 13, 14, 20, 21, 22, 30, 31, 33, 40, 42, 44, 51, 61],
+    finalSpotId: 10,
+    minStampCount: 10,
+  },
 };
 
 export default function App() {
@@ -219,7 +201,7 @@ export default function App() {
   // 선택 시즌에 따른 장소 배열 (지도 영역에 marker 표시 기준)
   const [spots, setSpots] = useState(
     Object.values(placeData).filter((spot) =>
-      seasonIdList[season].includes(spot.id),
+      seasonLists[season].idList.includes(spot.id),
     ),
   );
 
@@ -227,16 +209,16 @@ export default function App() {
   const [selectedSpots, setSelectedSpots] = useState([]);
 
   // 최종 장소
-  // 원본 배열(spots)과 같은 객체 reference
-  const FINAL_SPOT_ID = 10;
-  const finalSpot = spots.find((spot) => spot.id === FINAL_SPOT_ID);
+  const finalSpot = spots.find(
+    (spot) => spot.id === seasonLists[season].finalSpotId,
+  );
 
   ////////// FUNCTION //////////
 
   useEffect(() => {
     setSpots(
       Object.values(placeData).filter((spot) =>
-        seasonIdList[season].includes(spot.id),
+        seasonLists[season].idList.includes(spot.id),
       ),
     );
 
@@ -247,38 +229,41 @@ export default function App() {
     setSeason(value);
   }
 
-  // 메시지(경고창) 출력 함수
-  function printMessage(message) {
-    window.alert(message);
-  }
-
   // 장소 선택(isSelected: true) 처리 함수
   function changeIsSelectedTrue(spot) {
     return { ...spot, isSelected: true };
   }
 
   // Marker Click Function
-  function handleAddSpot(clickedSpot, selectedCount) {
-    // console.log(spot.name); // clicked spot right now
+  function handleAddSpot(clickedSpot) {
+    const selectedCount = selectedSpots.length;
 
-    // 첫 번째 장소는 종합 안내소
+    console.log(clickedSpot.name, selectedCount, selectedSpots); // clicked spot right now
+    // 0. 스탬프 투어 완성 상태라면, addSpot 기능 중지
+    if (selectedCount === seasonLists[season].minStampCount + 2) return;
+
+    // 1-1. 첫 번째 장소는 종합 안내소
     // : 아직 아무 장소도 클릭하지 않음 + 현재 클릭한 장소가 스탬프 스팟
     if (!selectedSpots[0] && clickedSpot.hasStamp) {
-      printMessage('📌 첫 번째 장소는 종합 안내소를 선택합니다.');
+      printAlert('📌 첫 번째 장소는 종합 안내소를 선택합니다.');
       return;
     }
 
-    // 이후 ONLY hasStamp spot만 추가 가능
+    // 1-2. 이후 ONLY hasStamp spot만 추가 가능
     // : 어떤 장소(들)가 이미 클릭됨 + 현재 클릭한 장소가 종합 안내소
     if (selectedSpots[0] && !clickedSpot.hasStamp) {
-      printMessage('📌 종합안내소는 첫 번째 장소로만 선택 가능합니다.');
+      printAlert('📌 종합안내소는 첫 번째 장소로만 선택 가능합니다.');
       return;
     }
 
-    // 기존 클릭 장소 중복 추가 방지
+    // 2. 기존 클릭 장소 리스트에서 삭제
     // : 현재 클릭한 장소(clickedSpot=spot)의 isSelected: true
     if (clickedSpot.isSelected) {
-      printMessage('💥 장소를 해제합니다.');
+      const confirmCancel = printConfirm('💥 장소를 해제합니다.');
+
+      // Guard Clause
+      if (!confirmCancel) return;
+
       setSpots((spots) =>
         spots.map((spot) =>
           spot.id === clickedSpot.id ? { ...spot, isSelected: false } : spot,
@@ -290,34 +275,35 @@ export default function App() {
           (selectedSpot) => selectedSpot.id !== clickedSpot.id,
         ),
       );
+
       return;
     }
 
-    // Marker 클릭 시 작업
-    // 1. spots 배열 내 clickedSpot과 동일한 spot의 속성값 "isSelected: true" 변경
+    // 3. Marker 클릭 시 작업
+    // 3-1. spots 배열 내 clickedSpot과 동일한 spot의 속성값 "isSelected: true" 변경
     setSpots((spots) =>
       spots.map((spot) =>
         spot.id === clickedSpot.id ? changeIsSelectedTrue(spot) : spot,
       ),
     );
 
-    // 2. selectedSpots 배열 내 clickedSpot 추가
+    // 3-2. selectedSpots 배열 내 clickedSpot 추가
     setSelectedSpots((selectedSpots) => [
       ...selectedSpots,
       changeIsSelectedTrue(clickedSpot),
     ]);
 
-    // 시작 장소 + 스탬프 10곳 모두 선택 시 최종 장소 추가
+    // 4. 시작 장소 + 스탬프 10곳 모두 선택 시 최종 장소 추가
     // (※ 단, Array의 길이는 handleAddSpot 함수 종료 후 반영되므로 11이 아닌 10)
-    if (selectedCount === 10) {
-      // spots 배열 내 최종 장소 속성값 "isSelected: true"
+    if (selectedCount === seasonLists[season].minStampCount) {
+      // 4-1. spots 배열 내 최종 장소 속성값 "isSelected: true"
       setSpots((spots) =>
         spots.map((spot) =>
           spot.id === finalSpot.id ? changeIsSelectedTrue(spot) : spot,
         ),
       );
 
-      // selectedSpots 배열 내 최종장소 추가
+      // 4-2. selectedSpots 배열 내 최종장소 추가
       setSelectedSpots((selectedSpots) => [
         ...selectedSpots,
         changeIsSelectedTrue(finalSpot), // 속성값 "isSelected: true"
@@ -330,7 +316,9 @@ export default function App() {
     console.log(spots, selectedSpots);
 
     const message = '⚠ 선택한 순서표를 초기화합니다. ⚠';
-    const confirmReset = window.confirm(message);
+    const confirmReset = printConfirm(message);
+
+    console.log(confirmReset);
 
     // Guard Clause
     if (!confirmReset) return;
@@ -351,7 +339,7 @@ export default function App() {
               onResetList={handleResetList}
             />
           ) : (
-            <Description season={season} />
+            <Description season={season} seasonLists={seasonLists} />
           )}
         </aside>
         <main className="map-wrapper">
@@ -369,8 +357,6 @@ export default function App() {
 
 // TOP NAVIGATION
 function Nav({ season, onChangeSeason }) {
-  // const [season, setSeason] = useState('spring2026');
-
   return (
     <nav className="nav">
       <img src="logo.png" alt="Logo" className="nav__logo" />

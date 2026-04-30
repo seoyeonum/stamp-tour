@@ -1,28 +1,17 @@
-export default function Description({ season }) {
-  const data = {
-    autumn2025: {
-      title: '🍁2025 가을 궁중문화축전 스탬프 투어🍁',
-      date: '📅 10.8.(수)~10.12.(일) 9:00~18:00',
-      place: '🧭 4대궁(경복궁, 창덕궁, 덕수궁, 창경궁) 및 종묘',
-    },
-    spring2026: {
-      title: '🌸2026 봄 궁중문화축전 스탬프 투어🌸',
-      date: '📅 4.25.(토)~5.3.(일) 9:00~18:00',
-      place: '🧭 5대궁(경복궁, 창덕궁, 덕수궁, 창경궁, 경희궁) 및 종묘',
-    },
-  };
+export default function Description({ season, seasonLists }) {
+  const selectedSeason = seasonLists[season];
 
-  const selectedSeason = data[season];
   const title = selectedSeason.title;
   const date = selectedSeason.date;
   const place = selectedSeason.place;
+  const minStampCount = selectedSeason.minStampCount;
   const siteUrl = 'https://www.kh.or.kr/fest';
   const subTitle = '📌 이용 안내';
   const textGuideline = [
-    '① 지도에서 도장이 비치된 장소를 눌러 순서표에 장소를 추가합니다.',
-    '② 시작 장소는 종합관리소를 선택합니다.',
-    '③ 완주 기념품 수령처(경복궁 종합관리소)는 스탬프 투어 스팟 10곳을 모두 추가 시 자동으로 순서표에 추가됩니다.',
-    "④ 아래 '장소 재설정' 버튼을 클릭하면 목록이 초기화됩니다.",
+    `① 지도에서 도장이 비치된 장소를 눌러 순서표에 장소를 추가합니다.`,
+    `② 시작 장소는 종합안내소를 선택합니다.`,
+    `③ 완주 기념품 수령처는 스탬프 투어 스팟 ${minStampCount}곳을 모두 추가 시 자동으로 순서표에 추가됩니다.`,
+    `④ 아래 '장소 재설정' 버튼을 클릭하면 목록이 초기화됩니다.`,
   ];
 
   return (

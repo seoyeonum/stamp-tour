@@ -5,7 +5,7 @@ import {
   Marker,
   Tooltip,
 } from 'react-leaflet';
-import { violetIcon, blueIcon, redIcon } from './App';
+import { violetIcon, blueIcon, redIcon } from './markerIcons';
 import { useEffect, useRef, useState } from 'react';
 
 // StampMap Area
@@ -17,7 +17,6 @@ export default function StampMap({
 }) {
   // selected spot의 위치 정보 배열
   const [routePositions, setRoutePosition] = useState([]);
-  const selectedCount = selectedSpots.length;
 
   // useRef: re-rendering에도 값을 유지!
   const routeObject = useRef({});
@@ -104,7 +103,8 @@ export default function StampMap({
             spot.hasStamp ? blueIcon : spot.isSelected ? violetIcon : redIcon
           }
           eventHandlers={{
-            click: () => onAddSpot(spot, selectedCount),
+            // click: () => onAddSpot(spot, selectedCount),
+            click: () => onAddSpot(spot),
           }}
           key={spot.id}
         >
