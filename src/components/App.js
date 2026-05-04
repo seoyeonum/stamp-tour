@@ -215,6 +215,21 @@ export default function App() {
 
   ////////// FUNCTION //////////
 
+  // tab title 변경
+  useEffect(
+    function () {
+      if (!season) return;
+      document.title = `${seasonLists[season].title}`;
+
+      // cleanup function
+      return function () {
+        document.title = '궁중문화축전 스탬프 투어';
+      };
+    },
+    [season],
+  );
+
+  // season에 따른 spot 선별 및 선택 항목 초기화
   useEffect(() => {
     setSpots(
       Object.values(placeData).filter((spot) =>
@@ -225,6 +240,7 @@ export default function App() {
     setSelectedSpots([]);
   }, [season]);
 
+  // season 변경
   function handleSeason(value) {
     setSeason(value);
   }
@@ -234,13 +250,64 @@ export default function App() {
     return { ...spot, isSelected: true };
   }
 
-  // Marker Click Function
-  function handleAddSpot(clickedSpot) {
+  // 장소 선택 처리 및 selectedSpots 에 추가
+  function addSpot(clickedSpot) {
+    // spots 배열 내 clickedSpot과 동일한 spot의 속성값 "isSelected: true" 변경
+    setSpots((spots) =>
+      spots.map((spot) =>
+        spot.id === clickedSpot.id ? changeIsSelectedTrue(spot) : spot,
+      ),
+    );
+
+    // selectedSpots 배열 내 clickedSpot 추가
+    setSelectedSpots((selectedSpots) => [
+      ...selectedSpots,
+      changeIsSelectedTrue(clickedSpot),
+    ]);
+  }
+
+  // 최종 장소 추가
+  function addFinalSpot() {
+    // spots 배열 내 최종 장소 속성값 "isSelected: true"
+    setSpots((spots) =>
+      spots.map((spot) =>
+        spot.id === finalSpot.id ? changeIsSelectedTrue(spot) : spot,
+      ),
+    );
+
+    // selectedSpots 배열 내 최종장소 추가
+    setSelectedSpots((selectedSpots) => [
+      ...selectedSpots,
+      changeIsSelectedTrue(finalSpot), // 속성값 "isSelected: true"
+    ]);
+  }
+
+  // 클릭한 장소 선택 해제 및 selectedSpots에서 삭제
+  function removeSpot(clickedSpot, selectedCount) {
+    setSpots((spots) =>
+      spots.map((spot) =>
+        spot.id === clickedSpot.id ? { ...spot, isSelected: false } : spot,
+      ),
+    );
+
+    setSelectedSpots((selectedSpots) => {
+      const filteredSpots = selectedSpots.filter(
+        (selectedSpot) => selectedSpot.id !== clickedSpot.id,
+      );
+
+      const removeFinalSpot =
+        selectedCount !== 1 && filteredSpots.at(-1)?.id === finalSpot.id;
+
+      return removeFinalSpot ? filteredSpots.slice(0, -1) : filteredSpots;
+    });
+  }
+
+  // Marker 클릭 함수
+  function handleClickedMarker(clickedSpot) {
     const selectedCount = selectedSpots.length;
 
-    console.log(clickedSpot.name, selectedCount, selectedSpots); // clicked spot right now
     // 0. 스탬프 투어 완성 상태라면, addSpot 기능 중지
-    if (selectedCount === seasonLists[season].minStampCount + 2) return;
+    // if (selectedCount === seasonLists[season].minStampCount + 2) return;
 
     // 1-1. 첫 번째 장소는 종합 안내소
     // : 아직 아무 장소도 클릭하지 않음 + 현재 클릭한 장소가 스탬프 스팟
@@ -256,69 +323,31 @@ export default function App() {
       return;
     }
 
-    // 2. 기존 클릭 장소 리스트에서 삭제
-    // : 현재 클릭한 장소(clickedSpot=spot)의 isSelected: true
+    // 2. 장소 중복 클릭(리스트에서 삭제)
     if (clickedSpot.isSelected) {
       const confirmCancel = printConfirm('💥 장소를 해제합니다.');
 
       // Guard Clause
       if (!confirmCancel) return;
 
-      setSpots((spots) =>
-        spots.map((spot) =>
-          spot.id === clickedSpot.id ? { ...spot, isSelected: false } : spot,
-        ),
-      );
-
-      setSelectedSpots((selectedSpots) =>
-        selectedSpots.filter(
-          (selectedSpot) => selectedSpot.id !== clickedSpot.id,
-        ),
-      );
-
+      removeSpot(clickedSpot, selectedCount);
       return;
     }
 
-    // 3. Marker 클릭 시 작업
-    // 3-1. spots 배열 내 clickedSpot과 동일한 spot의 속성값 "isSelected: true" 변경
-    setSpots((spots) =>
-      spots.map((spot) =>
-        spot.id === clickedSpot.id ? changeIsSelectedTrue(spot) : spot,
-      ),
-    );
+    // 3. 클릭 장소 선택 처리 및 selectedSpots에 추가
+    addSpot(clickedSpot);
 
-    // 3-2. selectedSpots 배열 내 clickedSpot 추가
-    setSelectedSpots((selectedSpots) => [
-      ...selectedSpots,
-      changeIsSelectedTrue(clickedSpot),
-    ]);
-
-    // 4. 시작 장소 + 스탬프 10곳 모두 선택 시 최종 장소 추가
-    // (※ 단, Array의 길이는 handleAddSpot 함수 종료 후 반영되므로 11이 아닌 10)
+    // 4. 시작 장소 + 스탬프 장소 모두 선택 시 최종 장소 추가
+    // (※ 단, Array의 길이는 handleClickedMarker 함수 종료 후 반영되므로 seasonLists[season].minStampCount와)
     if (selectedCount === seasonLists[season].minStampCount) {
-      // 4-1. spots 배열 내 최종 장소 속성값 "isSelected: true"
-      setSpots((spots) =>
-        spots.map((spot) =>
-          spot.id === finalSpot.id ? changeIsSelectedTrue(spot) : spot,
-        ),
-      );
-
-      // 4-2. selectedSpots 배열 내 최종장소 추가
-      setSelectedSpots((selectedSpots) => [
-        ...selectedSpots,
-        changeIsSelectedTrue(finalSpot), // 속성값 "isSelected: true"
-      ]);
+      addFinalSpot();
     }
   }
 
+  // 순서표 초기화 함수
   function handleResetList() {
-    // selectedSpots 확인용 구문
-    console.log(spots, selectedSpots);
-
     const message = '⚠ 선택한 순서표를 초기화합니다. ⚠';
     const confirmReset = printConfirm(message);
-
-    console.log(confirmReset);
 
     // Guard Clause
     if (!confirmReset) return;
@@ -346,7 +375,7 @@ export default function App() {
           <StampMap
             position={position}
             spots={spots}
-            onAddSpot={handleAddSpot}
+            onAddSpot={handleClickedMarker}
             selectedSpots={selectedSpots}
           />
         </main>
@@ -361,8 +390,12 @@ function Nav({ season, onChangeSeason }) {
     <nav className="nav">
       <img src="logo.png" alt="Logo" className="nav__logo" />
       <select value={season} onChange={(e) => onChangeSeason(e.target.value)}>
-        <option value="spring2026">2026 봄 궁중문화축전</option>
-        <option value="autumn2025">2025 가을 궁중문화축전 </option>
+        <option value="spring2026">
+          {seasonLists['spring2026'].title.slice(2, -9)}
+        </option>
+        <option value="autumn2025">
+          {seasonLists['autumn2025'].title.slice(2, -9)}
+        </option>
       </select>
       {/*
       <ul className="nav__links">
