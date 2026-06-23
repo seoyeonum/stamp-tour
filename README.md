@@ -43,10 +43,9 @@
 ## 사용 기술
 
 - **Front-end**: React, JavaScript, HTML, CSS
-- **API**: Leaflet API, OSRM API
-- **Version Control**: GitHub
+- **External API & Library**: Leaflet, OSRM API
+- **Version Control**: Git, GitHub
 - **Deployment**: Vercel
-- **IDE**: VSCode
 
 <!-- ---------- 6. Implementation Details or Trouble Shooting ---------- -->
 
@@ -100,7 +99,8 @@
   > UX enhancement update  
   > : 자동 스크롤, 모바일 반응형 하단바, 장소 선택 해제 기능 구현
 
-- 2026.04.23 ~ 2026.05.04
+- 2026.04.23. ~ 2026.05.04.
+
   > Season update & route rendering
   > : 시즌 선택 기능, OSRM API 실제 경로 렌더링, request 최적화
 
