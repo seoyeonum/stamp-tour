@@ -5,12 +5,13 @@ import {
   Marker,
   Tooltip,
 } from 'react-leaflet';
-import { violetIcon, blueIcon, redIcon } from './markerIcons';
+import { violetIcon, blueIcon, redIcon } from './MarkerIcons';
 import { useEffect, useRef, useState } from 'react';
+import { position } from '../../data/stamp-data';
 
 // StampMap Area
 export default function StampMap({
-  position,
+  // position,
   spots,
   onAddSpot,
   selectedSpots,
@@ -78,41 +79,43 @@ export default function StampMap({
   }, [selectedSpots]);
 
   return (
-    <MapContainer center={position} zoom={14} className="map">
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="&copy; OpenStreetMap contributors"
-      />
-
-      {/* selecedSpots 요소 간 연결선 출력 */}
-      {routePositions.length > 1 && (
-        <Polyline
-          positions={routePositions}
-          color="#007bff"
-          weight={4}
-          opacity={0.8}
-          // dashArray="5,10"
+    <div className="map-wrapper">
+      <MapContainer center={position} zoom={14} className="map">
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
         />
-      )}
 
-      {/* map 위 spot에 Marker 표시 */}
-      {spots.map((spot) => (
-        <Marker
-          position={[spot.lat, spot.lng]}
-          icon={
-            spot.hasStamp ? blueIcon : spot.isSelected ? violetIcon : redIcon
-          }
-          eventHandlers={{
-            // click: () => onAddSpot(spot, selectedCount),
-            click: () => onAddSpot(spot),
-          }}
-          key={spot.id}
-        >
-          <Tooltip className="spot-name" direction="top" offset={[0, -40]}>
-            {spot.name}
-          </Tooltip>
-        </Marker>
-      ))}
-    </MapContainer>
+        {/* selecedSpots 요소 간 연결선 출력 */}
+        {routePositions.length > 1 && (
+          <Polyline
+            positions={routePositions}
+            color="#007bff"
+            weight={4}
+            opacity={0.8}
+            // dashArray="5,10"
+          />
+        )}
+
+        {/* map 위 spot에 Marker 표시 */}
+        {spots.map((spot) => (
+          <Marker
+            position={[spot.lat, spot.lng]}
+            icon={
+              spot.hasStamp ? blueIcon : spot.isSelected ? violetIcon : redIcon
+            }
+            eventHandlers={{
+              // click: () => onAddSpot(spot, selectedCount),
+              click: () => onAddSpot(spot),
+            }}
+            key={spot.id}
+          >
+            <Tooltip className="spot-name" direction="top" offset={[0, -40]}>
+              {spot.name}
+            </Tooltip>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 }

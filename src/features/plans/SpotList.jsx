@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import Spot from './Spot';
 
 // Side Bar Area
 export default function SpotList({ selectedSpots, onResetList }) {
@@ -27,18 +28,5 @@ export default function SpotList({ selectedSpots, onResetList }) {
         장소 선택 초기화
       </button>
     </>
-  );
-}
-
-function Spot({ selectedSpot, num }) {
-  return (
-    <li className={selectedSpot.hasStamp ? 'spot-box' : 'spot-box info-spot'}>
-      <h3 className={!selectedSpot.hasStamp ? 'place info-spot' : 'place'}>
-        {selectedSpot.hasStamp && (
-          <span className="number">{num < 10 ? `0${num}` : num}</span>
-        )}
-        {selectedSpot.name}
-      </h3>
-    </li>
   );
 }
