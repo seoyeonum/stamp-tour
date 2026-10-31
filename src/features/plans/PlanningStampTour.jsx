@@ -6,6 +6,23 @@ import SpotList from './SpotList';
 import SelectSeason from './SelectSeason';
 import { placeData, seasonLists } from '../../data/stamp-data';
 import { printAlert, printConfirm } from '../../utils/helper';
+import styled from 'styled-components';
+
+const StyledAside = styled.div`
+  width: 28rem; /*사이드바 너비*/
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-bg);
+  overflow-y: auto; /* 길어지면 스크롤 */
+  padding: 1rem 2rem;
+  font-size: 1.5rem;
+
+  /* 모바일 환경 고려한 반응형 웹 */
+  @media (max-width: 768px) {
+    width: auto;
+    height: 14em;
+    font-size: 1.2rem;
+  }
+`;
 
 function PlanningStampTour() {
   // 기본 선택 시즌: "2026 봄"
@@ -177,7 +194,7 @@ function PlanningStampTour() {
         selectedSpots={selectedSpots}
       />
 
-      <div className="aside">
+      <StyledAside>
         <SelectSeason season={season} onChangeSeason={handleSeason} />
         {selectedSpots[0] ? (
           <SpotList
@@ -187,7 +204,7 @@ function PlanningStampTour() {
         ) : (
           <Description season={season} seasonLists={seasonLists} />
         )}
-      </div>
+      </StyledAside>
     </>
   );
 }

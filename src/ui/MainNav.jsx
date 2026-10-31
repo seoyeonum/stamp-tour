@@ -1,24 +1,38 @@
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+
+const StyledNavLinks = styled.ul`
+  display: flex;
+  align-items: center;
+  list-style: none;
+`;
+
+const StyledNavItem = styled.li`
+  margin-left: 4rem;
+`;
+
+const StyledNavLink = styled(Link)`
+  font-size: 1.7rem;
+  font-weight: 400;
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  transition: all 0.3s;
+`;
 
 function MainNav() {
   return (
-    <ul className="nav__links">
-      <li className="nav__item">
-        <Link className="nav__link" to="/about">
-          ABOUT
-        </Link>
-      </li>
-      <li className="nav__item">
-        <Link className="nav__link" to="/plans">
-          PLANS
-        </Link>
-      </li>
-      <li className="nav__item">
-        <Link className="nav__link" to="/tours">
-          TOURS
-        </Link>
-      </li>
-    </ul>
+    <StyledNavLinks>
+      <StyledNavItem>
+        <StyledNavLink to="/about">ABOUT</StyledNavLink>
+      </StyledNavItem>
+      <StyledNavItem>
+        <StyledNavLink to="/plans">PLANS</StyledNavLink>
+      </StyledNavItem>
+      <StyledNavItem>
+        <StyledNavLink to="/tours">TOURS</StyledNavLink>
+      </StyledNavItem>
+    </StyledNavLinks>
   );
 }
 

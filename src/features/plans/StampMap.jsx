@@ -8,6 +8,20 @@ import {
 import { violetIcon, blueIcon, redIcon } from './MarkerIcons';
 import { useEffect, useRef, useState } from 'react';
 import { position } from '../../data/stamp-data';
+import styled from 'styled-components';
+
+const StyledMapWrapper = styled.div`
+  flex: 1;
+`;
+
+const StyledSpotName = styled(Tooltip)`
+  font-size: 1.2rem;
+`;
+
+const StyledMapContainer = styled(MapContainer)`
+  height: 100%;
+  width: 100%;
+`;
 
 // StampMap Area
 export default function StampMap({
@@ -79,8 +93,8 @@ export default function StampMap({
   }, [selectedSpots]);
 
   return (
-    <div className="map-wrapper">
-      <MapContainer center={position} zoom={14} className="map">
+    <StyledMapWrapper>
+      <StyledMapContainer center={position} zoom={14}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap contributors"
@@ -110,12 +124,12 @@ export default function StampMap({
             }}
             key={spot.id}
           >
-            <Tooltip className="spot-name" direction="top" offset={[0, -40]}>
+            <StyledSpotName direction="top" offset={[0, -40]}>
               {spot.name}
-            </Tooltip>
+            </StyledSpotName>
           </Marker>
         ))}
-      </MapContainer>
-    </div>
+      </StyledMapContainer>
+    </StyledMapWrapper>
   );
 }
